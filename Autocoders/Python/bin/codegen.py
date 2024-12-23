@@ -439,10 +439,10 @@ def generate_topology(the_parsed_topology_xml, xml_filename, opt):
                 "Ai.xml", "Dictionary.xml"
             )
             PRINT.info(f"Generating XML dictionary {fileName}")
-            fd = open(
+            with open(
                 fileName, "wb"
-            )  # Note: binary forces the same encoding of the source files
-            fd.write(etree.tostring(topology_dict, pretty_print=True))
+            ) as fd:
+                fd.write(etree.tostring(topology_dict, pretty_print=True))
 
     initFiles = generator.create("initFiles")
     # startSource = generator.create("startSource")
@@ -578,71 +578,71 @@ def generate_component(
     """
     parsed_port_xml_list = []
     if opt.gen_report:
-        report_file = open(f"{xml_filename.replace('Ai.xml', '')}Report.txt", "w")
-        num_input_ports = 0
-        num_output_ports = 0
+        with open(f"{xml_filename.replace('Ai.xml', '')}Report.txt", "w") as report_file:
+            num_input_ports = 0
+            num_output_ports = 0
 
-        # Count ports
+            # Count ports
 
-        for port in the_parsed_component_xml.get_ports():
-            if port.get_direction() == "input":
-                num_input_ports = num_input_ports + int(port.get_max_number())
-            if port.get_direction() == "output":
-                num_output_ports = num_output_ports + int(port.get_max_number())
-        if len(the_parsed_component_xml.get_ports()):
-            if num_input_ports:
-                report_file.write(f"Input Ports: {num_input_ports}\n")
-            if num_output_ports:
-                report_file.write(f"Output Ports: {num_output_ports}\n")
+            for port in the_parsed_component_xml.get_ports():
+                if port.get_direction() == "input":
+                    num_input_ports = num_input_ports + int(port.get_max_number())
+                if port.get_direction() == "output":
+                    num_output_ports = num_output_ports + int(port.get_max_number())
+            if len(the_parsed_component_xml.get_ports()):
+                if num_input_ports:
+                    report_file.write(f"Input Ports: {num_input_ports}\n")
+                if num_output_ports:
+                    report_file.write(f"Output Ports: {num_output_ports}\n")
 
-        # Count regular commands
-        commands = 0
-        idList = ""
-        if len(the_parsed_component_xml.get_commands()):
-            for command in the_parsed_component_xml.get_commands():
-                commands += len(command.get_opcodes())
-                for opcode in command.get_opcodes():
-                    idList += opcode + ","
-
-        # Count parameter commands
-        if len(the_parsed_component_xml.get_parameters()):
-            for parameter in the_parsed_component_xml.get_parameters():
-                commands += len(parameter.get_set_opcodes())
-                for opcode in parameter.get_set_opcodes():
-                    idList += opcode + ","
-                commands += len(parameter.get_save_opcodes())
-                for opcode in parameter.get_save_opcodes():
-                    idList += opcode + ","
-
-        if commands > 0:
-            report_file.write(f"Commands: {commands}\n OpCodes: {idList[:-1]}\n")
-
-        if len(the_parsed_component_xml.get_channels()):
+            # Count regular commands
+            commands = 0
             idList = ""
-            channels = 0
-            for channel in the_parsed_component_xml.get_channels():
-                channels += len(channel.get_ids())
-                for id in channel.get_ids():
-                    idList += id + ","
-            report_file.write(f"Channels: {channels}\n ChanIds: {idList[:-1]}\n")
+            if len(the_parsed_component_xml.get_commands()):
+                for command in the_parsed_component_xml.get_commands():
+                    commands += len(command.get_opcodes())
+                    for opcode in command.get_opcodes():
+                        idList += opcode + ","
 
-        if len(the_parsed_component_xml.get_events()):
-            idList = ""
-            events = 0
-            for event in the_parsed_component_xml.get_events():
-                events += len(event.get_ids())
-                for id in event.get_ids():
-                    idList += id + ","
-            report_file.write(f"Events: {events}\n EventIds: {idList[:-1]}\n")
+            # Count parameter commands
+            if len(the_parsed_component_xml.get_parameters()):
+                for parameter in the_parsed_component_xml.get_parameters():
+                    commands += len(parameter.get_set_opcodes())
+                    for opcode in parameter.get_set_opcodes():
+                        idList += opcode + ","
+                    commands += len(parameter.get_save_opcodes())
+                    for opcode in parameter.get_save_opcodes():
+                        idList += opcode + ","
 
-        if len(the_parsed_component_xml.get_parameters()):
-            idList = ""
-            parameters = 0
-            for parameter in the_parsed_component_xml.get_parameters():
-                parameters += len(parameter.get_ids())
-                for id in parameter.get_ids():
-                    idList += id + ","
-            report_file.write(f"Parameters: {parameters}\n ParamIds: {idList[:-1]}\n")
+            if commands > 0:
+                report_file.write(f"Commands: {commands}\n OpCodes: {idList[:-1]}\n")
+
+            if len(the_parsed_component_xml.get_channels()):
+                idList = ""
+                channels = 0
+                for channel in the_parsed_component_xml.get_channels():
+                    channels += len(channel.get_ids())
+                    for id in channel.get_ids():
+                        idList += id + ","
+                report_file.write(f"Channels: {channels}\n ChanIds: {idList[:-1]}\n")
+
+            if len(the_parsed_component_xml.get_events()):
+                idList = ""
+                events = 0
+                for event in the_parsed_component_xml.get_events():
+                    events += len(event.get_ids())
+                    for id in event.get_ids():
+                        idList += id + ","
+                report_file.write(f"Events: {events}\n EventIds: {idList[:-1]}\n")
+
+            if len(the_parsed_component_xml.get_parameters()):
+                idList = ""
+                parameters = 0
+                for parameter in the_parsed_component_xml.get_parameters():
+                    parameters += len(parameter.get_ids())
+                    for id in parameter.get_ids():
+                        idList += id + ","
+                report_file.write(f"Parameters: {parameters}\n ParamIds: {idList[:-1]}\n")
     #
     # Configure the meta-model for the component
     #
