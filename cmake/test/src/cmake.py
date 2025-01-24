@@ -16,6 +16,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from security import safe_command
 
 # Constants to supplied to the calls to subprocess
 CPUS = multiprocessing.cpu_count()
@@ -49,8 +50,7 @@ def subprocess_helper(args, cwd):
         )
 
     # Verbose output desired from pytest
-    proc = subprocess.Popen(
-        args=args,
+    proc = safe_command.run(subprocess.Popen, args=args,
         cwd=str(cwd),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
