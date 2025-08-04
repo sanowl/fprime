@@ -11,6 +11,7 @@ This is required to be able to read the version files and pass them to the fpp-t
 import subprocess
 import argparse
 import json
+from security import safe_command
 
 
 def main():
@@ -74,7 +75,7 @@ def main():
         *args.sources,
     ]
 
-    return subprocess.call(args=cmd_args)
+    return safe_command.run(subprocess.call, args=cmd_args)
 
 
 if __name__ == "__main__":
